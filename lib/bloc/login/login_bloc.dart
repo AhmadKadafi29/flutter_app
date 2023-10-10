@@ -1,0 +1,21 @@
+import 'package:bloc/bloc.dart';
+import 'package:flutter_app/data/datasource/auth_remote_datasource.dart';
+import 'package:flutter_app/data/models/response/auth_response_model.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+import '../../data/models/request/auth_request_model.dart';
+
+part 'login_event.dart';
+part 'login_state.dart';
+part 'login_bloc.freezed.dart';
+
+class LoginBloc extends Bloc<LoginEvent, LoginState> {
+  LoginBloc() : super(const _Initial()) {
+    on<LoginEvent>((event, emit) async {
+      emit(const _Loading());
+      final response = await AuthRemoteDatasource().login(event.requestModel);
+      response.fold(
+          (error) => emit(_Error(error)), (data) => emit(_Loaded(data)));
+    });
+  }
+}
